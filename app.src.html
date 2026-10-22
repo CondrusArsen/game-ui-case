@@ -304,6 +304,16 @@ canvas#fx{position:absolute;inset:0;width:100%;height:100%;z-index:80;pointer-ev
 .flyer{position:absolute;z-index:90;font-size:30px;pointer-events:none;transition:left .65s cubic-bezier(.5,0,.75,0),top .65s cubic-bezier(.25,1,.5,1),transform .65s var(--smooth),opacity .2s .55s}
 .toast{position:absolute;left:50%;top:76px;z-index:95;transform:translate(-50%,-30px);opacity:0;background:#061631;border:2px solid #24477a;padding:8px 16px;border-radius:14px;font-weight:800;font-size:14px;transition:all .35s var(--spring);white-space:nowrap}
 .toast.on{transform:translate(-50%,0);opacity:1}
+/* short phones (iPhone SE 375×667): tighter header, compact secondary cards, PLAY keeps its size */
+@media (max-height:720px){
+  .logo{top:70px}.logo .l1{font-size:38px}.logo .l2{font-size:46px}.logo small{display:none}
+  .rail{top:178px;gap:10px}
+  .rbtn .face{width:50px;height:50px;font-size:30px;border-radius:16px}.rbtn .face img{width:38px;height:38px}
+  .card-mini{width:146px;padding:21px 10px 8px}.card-mini .ribbon{font-size:12px}.card-mini .bar{display:none}.card-mini .art{width:36px;height:36px}.card-mini .art.ico{font-size:34px}
+  .play-zone{bottom:100px;gap:8px}
+  .btn.lg{min-height:62px;font-size:26px}
+}
+@media (max-width:380px){.pill b{font-size:15px}.pill .pic{font-size:30px;left:-12px}.pill#r-coins{padding-left:30px;flex:1.35}.pill#r-energy{flex:.6}.pill small{display:none}}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
