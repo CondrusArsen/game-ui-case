@@ -103,7 +103,16 @@ h2{margin:6px 0 12px;font-size:26px;line-height:1;font-weight:800;letter-spacing
 .quest .claim{height:34px;padding:0 12px;font-size:15px;border-radius:12px}
 
 /* ---------- map ---------- */
-#map{padding-left:0;padding-right:0}
+#map{padding-left:0;padding-right:0;background:
+  radial-gradient(60% 18% at 20% 8%,rgba(46,230,201,.10),transparent 70%),
+  radial-gradient(50% 14% at 85% 35%,rgba(155,123,255,.10),transparent 70%),
+  radial-gradient(70% 20% at 30% 70%,rgba(46,230,201,.08),transparent 70%),
+  linear-gradient(180deg,#0d3a6e 0%,#0b2f5a 40%,#082445 75%,#061a33 100%)}
+.map-wrap::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.35;
+  background-image:radial-gradient(circle at 20% 30%,rgba(255,255,255,.18) 0 2px,transparent 3px),radial-gradient(circle at 70% 60%,rgba(255,255,255,.14) 0 1.5px,transparent 2.5px),radial-gradient(circle at 45% 85%,rgba(255,255,255,.12) 0 2px,transparent 3px);
+  background-size:140px 160px,180px 200px,220px 240px;animation:drift-up 18s linear infinite}
+@keyframes drift-up{to{background-position:0 -480px,0 -600px,0 -720px}}
+.map-wrap::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(115deg,rgba(255,255,255,.035) 0 40px,transparent 40px 120px);mix-blend-mode:screen}
 .map-wrap{position:relative;height:1180px}
 .map-wrap svg.path{position:absolute;inset:0;width:100%;height:100%}
 .node{position:absolute;width:62px;height:62px;margin:-31px 0 0 -31px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:22px;transition:transform .2s var(--ease-out)}
@@ -314,7 +323,7 @@ canvas#fx{position:absolute;inset:0;width:100%;height:100%;z-index:80;pointer-ev
   <!-- MAP -->
   <section class="screen off-right" id="map">
     <div class="map-wrap" id="mapWrap">
-      <svg class="path" viewBox="0 0 360 1180" preserveAspectRatio="none"><path id="mapPath" d="" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="16" stroke-linecap="round" stroke-dasharray="2 26"/></svg>
+      <svg class="path" viewBox="0 0 360 1180" preserveAspectRatio="none"><path id="mapPathBase" d="" fill="none" stroke="rgba(3,14,32,.45)" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/><path id="mapPathSand" d="" fill="none" stroke="#e8c98f" stroke-opacity=".22" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/><path id="mapPath" d="" fill="none" stroke="#ffd166" stroke-opacity=".75" stroke-width="5" stroke-linecap="round" stroke-dasharray="1 16"/></svg>
       <div class="map-deco" style="left:24px;top:180px"><svg class="ico" aria-hidden="true"><use href="#i-fish"/></svg></div><div class="map-deco" style="right:30px;top:520px;animation-delay:-1s"><svg class="ico" aria-hidden="true"><use href="#i-turtle"/></svg></div>
       <div class="map-deco" style="left:30px;top:820px;animation-delay:-2s"><svg class="ico" aria-hidden="true"><use href="#i-coral"/></svg></div><div class="map-deco" style="right:40px;top:1000px;animation-delay:-3s"><svg class="ico" aria-hidden="true"><use href="#i-fish"/></svg></div>
     </div>
@@ -499,7 +508,7 @@ const NODES = [];
     const y = 1120 - (i - 1) * 56, x = 180 + Math.sin(i * 0.9) * 110;
     NODES.push({ x, y }); d += (i === 1 ? "M" : "L") + x + " " + y + " ";
   }
-  $("#mapPath").setAttribute("d", d);
+  ["#mapPath", "#mapPathBase", "#mapPathSand"].forEach(id => $(id).setAttribute("d", d));
   NODES.forEach((p, k) => {
     const n = document.createElement("button");
     n.className = "node"; n.style.left = (p.x / 360 * 100) + "%"; n.style.top = p.y + "px";
