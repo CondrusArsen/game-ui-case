@@ -396,7 +396,7 @@ canvas#fx{position:absolute;inset:0;width:100%;height:100%;z-index:80;pointer-ev
 
   <div class="scrim" id="scrim"></div>
 
-  <div class="panel sheet" id="sheet" role="dialog" aria-label="Level start">
+  <div class="panel sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Level start" inert>
     <span class="ribbon gold" id="sheetTitle">Level 15</span><button class="close" data-close aria-label="Close"></button>
     <div class="sec" style="text-align:center;margin-top:4px">Goals · 25 moves</div>
     <div class="goal"><div><i>#I:pearl#</i><b>× 30</b></div><div><i>#I:bubble#</i><b>× 12</b></div><div><i>#I:timer#</i><b>25</b></div></div>
@@ -409,7 +409,7 @@ canvas#fx{position:absolute;inset:0;width:100%;height:100%;z-index:80;pointer-ev
     <button class="btn coral lg" id="startLevel" style="width:100%"><span class="shine"></span><b>Start</b><span style="display:flex;align-items:center;gap:2px;font-size:20px;-webkit-text-stroke:0;text-shadow:none">#I:energy#<b style="font-size:20px">1</b></span></button>
   </div>
 
-  <div class="panel popup" id="questsPop" role="dialog" aria-label="Daily quests">
+  <div class="panel popup" id="questsPop" role="dialog" aria-modal="true" aria-label="Daily quests" inert>
     <span class="ribbon teal">Daily Quests</span><button class="close" data-close aria-label="Close"></button>
     <div class="quests" style="text-align:left">
       <div class="quest"><div class="q-ic">#I:shell#</div><div class="q-body"><b>Clear 3 levels</b><div class="bar"><i style="width:66%"></i><span>2/3</span></div></div><button class="btn sm disabled"><b>Go</b></button></div>
@@ -417,7 +417,7 @@ canvas#fx{position:absolute;inset:0;width:100%;height:100%;z-index:80;pointer-ev
     </div>
   </div>
 
-  <div class="panel popup" id="buyModal" role="dialog">
+  <div class="panel popup" id="buyModal" role="dialog" aria-modal="true" aria-label="Confirm purchase" inert>
     <span class="ribbon gold" id="buyTitle">Captain's Bundle</span><button class="close" data-close aria-label="Close"></button>
     <div class="chest" id="chest"><img src="art/chest.png" alt="Treasure chest"></div>
     <p>Confirm purchase</p>
@@ -427,7 +427,7 @@ canvas#fx{position:absolute;inset:0;width:100%;height:100%;z-index:80;pointer-ev
 
   <div id="dive"><div class="bubbles" id="bubbles"></div><div class="label">Diving…</div></div>
 
-  <div id="win" role="dialog" aria-label="Level complete">
+  <div id="win" role="dialog" aria-modal="true" aria-label="Level complete" inert>
     <div class="rays"></div>
     <div class="banner">Level Clear!</div>
     <div class="bigstars" id="bigstars"><span>★</span><span>★</span><span>★</span></div>
@@ -469,8 +469,8 @@ function go(tab) {
   inn.style.transition = "none"; inn.className = "screen " + (b > a ? "off-right" : "off-left"); void inn.offsetWidth;
   inn.style.transition = ""; inn.className = "screen"; enter(inn);
   out.className = "screen " + (b > a ? "off-left" : "off-right");
-  current = tab;
-  $$(".nav button").forEach(btn => btn.classList.toggle("on", btn.dataset.tab === tab));
+  current = tab; $$(".screen").forEach(sc => sc.inert = sc.id !== tab);
+  $$(".nav button").forEach(btn => { btn.classList.toggle("on", btn.dataset.tab === tab); btn.setAttribute("aria-current", btn.dataset.tab === tab ? "page" : "false"); });
   requestAnimationFrame(movePlate);
   if (tab === "map") scrollMapToMe();
   vibrate();
@@ -495,8 +495,31 @@ setInterval(() => {
 }, 1000);
 
 /* ---------- overlays ---------- */
-function openOverlay(id) { $("#scrim").classList.add("on"); $(id).classList.add("on"); vibrate(); }
-function closeOverlays() { $("#scrim").classList.remove("on"); $$(".sheet,.popup").forEach(o => o.classList.remove("on")); }
+/* Background is inert while a dialog is open; focus moves in and returns to the opener on close. */
+let opener = null, openDialog = null;
+const BACKDROP = () => [...$$(".screen"), $("#nav"), $(".hud")];
+function setBackdropInert(on) { BACKDROP().forEach(el => el.inert = on ? true : (el.classList.contains("screen") ? el.id !== current : false)); }
+function focusFirst(el) { const f = el.querySelector('button:not([disabled]):not(.disabled)'); f && f.focus({ preventScroll: true }); }
+function openOverlay(id) {
+  const el = $(id); opener = opener || document.activeElement; openDialog = el;
+  $("#scrim").classList.add("on"); el.classList.add("on"); el.inert = false; setBackdropInert(true);
+  setTimeout(() => focusFirst(el), 60); vibrate();
+}
+function closeOverlays() {
+  $("#scrim").classList.remove("on"); $$(".sheet,.popup").forEach(o => { o.classList.remove("on"); o.inert = true; });
+  openDialog = null; setBackdropInert(false);
+  if (opener && document.contains(opener) && !opener.closest("[inert]")) opener.focus({ preventScroll: true }); opener = null;
+}
+addEventListener("keydown", e => {
+  const dlg = openDialog || ($("#win").classList.contains("on") ? $("#win") : null);
+  if (!dlg) return;
+  if (e.key === "Escape" && openDialog) { e.preventDefault(); closeOverlays(); return; }
+  if (e.key !== "Tab") return;
+  const f = [...dlg.querySelectorAll("button:not([disabled]):not(.disabled)")].filter(b => b.offsetParent !== null);
+  if (!f.length) return;
+  if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+  else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+});
 $("#scrim").addEventListener("click", closeOverlays);
 $$("[data-close]").forEach(b => b.addEventListener("click", closeOverlays));
 
@@ -561,17 +584,17 @@ function dive() {
 }
 function showWin(lvl) {
   const stars = lvl === state.level ? 3 : Math.max(state.stars[lvl] || 0, 2);
-  $("#win").classList.add("on");
+  $("#win").classList.add("on"); $("#win").inert = false; setBackdropInert(true);
   $$("#bigstars span").forEach(s => s.classList.remove("on")); $$("#rewards div").forEach(d => d.classList.remove("on")); $("#winActions").classList.remove("on");
   $$("#bigstars span").forEach((s, i) => setTimeout(() => { if (i < stars) { s.classList.add("on"); vibrate(20); burst(s); } }, 600 + i * 360));
   $$("#rewards div").forEach((d, i) => setTimeout(() => d.classList.add("on"), 1700 + i * 120));
   setTimeout(() => { tween($("#rwCoins"), 0, 120, 700); tween($("#rwXp"), 0, 60, 700); confetti(); }, 1800);
-  setTimeout(() => $("#winActions").classList.add("on"), 2400);
+  setTimeout(() => { $("#winActions").classList.add("on"); $("#winNext").focus({ preventScroll: true }); }, 2400);
   state.stars[lvl] = Math.max(state.stars[lvl] || 0, stars);
   if (lvl === state.level) state.level = Math.min(20, state.level + 1);
 }
 function collectWin(next) {
-  $("#win").classList.remove("on"); addCoins(120); gainXp(60); renderMap();
+  $("#win").classList.remove("on"); $("#win").inert = true; setBackdropInert(false); addCoins(120); gainXp(60); renderMap();
   if (next) { go("map"); setTimeout(() => openSheet(state.level), 700); } else go("home");
 }
 $("#winHome").addEventListener("click", () => collectWin(false));
@@ -683,7 +706,7 @@ const TOUR = [
 let touring = false;
 async function tour() { if (touring) return; touring = true; for (const [w, a] of TOUR) { await new Promise(r => setTimeout(r, w)); a(); } touring = false; parent.postMessage({ type: "tour-done" }, "*"); }
 addEventListener("message", e => { if (e.data === "tour") tour(); });
-renderPass(); updateBadge(); movePlate(); enter($("#home"));
+renderPass(); updateBadge(); movePlate(); enter($("#home")); $$(".screen").forEach(sc => sc.inert = sc.id !== current);
 if (new URLSearchParams(location.search).get("tour")) setTimeout(tour, 800);
 </script>
 </body>
