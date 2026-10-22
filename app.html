@@ -214,7 +214,10 @@ h2{margin:6px 0 12px;font-size:26px;line-height:1;font-weight:800;letter-spacing
 canvas#fx{position:absolute;inset:0;width:100%;height:100%;z-index:80;pointer-events:none}
 
 /* ---------- chest ---------- */
-.chest{font-size:96px;display:inline-block;line-height:1;margin:6px 0}
+.chest{position:relative;display:inline-block;width:150px;height:150px;margin:0 0 6px}
+.chest img{position:relative;z-index:1;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 12px 18px rgba(0,0,0,.45))}
+.chest::after{content:"";position:absolute;inset:-30px;border-radius:50%;background:radial-gradient(circle,rgba(255,209,102,.85),rgba(46,230,201,.25) 45%,transparent 70%);opacity:0;transform:scale(.4);transition:all .5s var(--ease-out)}
+.chest.open::after{opacity:1;transform:scale(1.15)}
 .chest.shake{animation:shake .5s ease-in-out 2}
 @keyframes shake{25%{transform:rotate(-10deg)}75%{transform:rotate(10deg)}}
 .chest.open{animation:pop .5s var(--ease-out)}
@@ -336,7 +339,7 @@ canvas#fx{position:absolute;inset:0;width:100%;height:100%;z-index:80;pointer-ev
   <div class="modal" id="buyModal" role="dialog">
     <h3 id="buyTitle">Captain's Bundle</h3>
     <p>Confirm purchase</p>
-    <div class="chest" id="chest">🧰</div>
+    <div class="chest" id="chest"><img src="art/chest.png" alt="Treasure chest"></div>
     <button class="btn gold wide" id="confirmBuy"><span class="shine"></span><span id="buyPrice">$4.99</span></button>
     <div class="note">Prototype — no real payment is made</div>
   </div>
@@ -576,7 +579,7 @@ $("#goPremium").addEventListener("click", () => openBuy("Premium Pass", "$7.99",
 let onBuy = null;
 function openBuy(title, price, cb) {
   onBuy = cb; $("#buyTitle").textContent = title; $("#buyPrice").textContent = price;
-  $("#chest").className = "chest"; $("#chest").textContent = "🧰";
+  $("#chest").className = "chest";
   $("#scrim").classList.add("on"); $("#buyModal").classList.add("on");
 }
 $("#buyBundle").addEventListener("click", () => openBuy("Captain's Bundle", "$4.99", () => { addGems(500); addCoins(10000); state.energy = 5; $("#energy").textContent = 5; $("#etimer").textContent = "∞"; }));
@@ -588,7 +591,7 @@ $("#confirmBuy").addEventListener("click", () => {
   btn.classList.add("pressed"); setTimeout(() => btn.classList.remove("pressed"), 150);
   chest.classList.add("shake"); vibrate(40);
   setTimeout(() => {
-    chest.classList.remove("shake"); chest.classList.add("open"); chest.textContent = "✨"; confetti(60);
+    chest.classList.remove("shake"); chest.classList.add("open"); confetti(60);
     flyIcons("💎", chest, "#r-gems", 8, () => { onBuy && onBuy(); onBuy = null; });
     setTimeout(closeOverlays, 900);
   }, 1000);
