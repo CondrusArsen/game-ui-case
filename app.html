@@ -412,7 +412,7 @@ canvas#fx{position:absolute;inset:0;width:100%;height:100%;z-index:80;pointer-ev
       <img class="chest-art" src="art/chest.png" alt="">
             <h3 class="t-out" style="--stroke:#2c1677">Captain's<br>Bundle</h3>
       <div class="sub">One-time offer for new captains</div>
-      <div class="contents"><div><i><svg class="ico" aria-hidden="true"><use href="#i-gem"/></svg></i>500</div><div><i><svg class="ico" aria-hidden="true"><use href="#i-coin"/></svg></i>10K</div><div><i><svg class="ico" aria-hidden="true"><use href="#i-energy"/></svg></i>∞ 2h</div></div>
+      <div class="contents"><div><i><svg class="ico" aria-hidden="true"><use href="#i-gem"/></svg></i>500</div><div><i><svg class="ico" aria-hidden="true"><use href="#i-coin"/></svg></i>10K</div><div><i><svg class="ico" aria-hidden="true"><use href="#i-energy"/></svg></i>+5</div></div>
       <div class="row"><span class="timer-chip"><svg class="ico" aria-hidden="true"><use href="#i-timer"/></svg><span data-timer="5400">01:30:00</span></span><button class="btn gold" id="buyBundle"><span class="old">$16.99</span><b>$4.99</b></button></div>
     </div>
     <div class="grid st" id="packs">
@@ -703,17 +703,26 @@ $("#goPremium").addEventListener("click", () => openBuy("Premium Pass", "$7.99",
   requestAnimationFrame(() => place(0)); addEventListener("resize", () => place(tabs.findIndex(t => t.classList.contains("on"))));
 })();
 let onBuy = null;
-function openBuy(title, price, cb) { onBuy = cb; $("#buyTitle").textContent = title; $("#buyPrice").textContent = price; $("#chest").className = "chest"; openOverlay("#buyModal"); }
-$("#buyBundle").addEventListener("click", () => openBuy("Captain's Bundle", "$4.99", () => { addGems(500); addCoins(10000); state.energy = 5; $("#energy").textContent = 5; $("#etimer").textContent = "∞"; }));
+function openBuy(title, price, cb) { if (buying) return; onBuy = cb; $("#buyTitle").textContent = title; $("#buyPrice").textContent = price; $("#chest").className = "chest"; openOverlay("#buyModal"); }
+$("#buyBundle").addEventListener("click", () => {
+  if (state.bundleOwned) return;
+  openBuy("Captain's Bundle", "$4.99", () => {
+    addGems(500); addCoins(10000); state.energy += 5; $("#energy").textContent = state.energy; bump("#r-energy");
+    state.bundleOwned = true; const b = $("#buyBundle"); b.classList.add("disabled"); b.innerHTML = "<b>Owned</b>"; b.setAttribute("aria-disabled", "true");
+  });
+});
 $$("#packs .pack").forEach(p => p.addEventListener("click", () => { const g = +p.dataset.gems; openBuy(`${fmt(g)} Gems`, p.querySelector(".btn b").textContent, () => addGems(g)); }));
+let buying = false;
 $("#confirmBuy").addEventListener("click", () => {
-  const chest = $("#chest"), btn = $("#confirmBuy");
+  if (buying || !onBuy) return;                       // one purchase per confirmation, even on double tap
+  buying = true; const cb = onBuy; onBuy = null;
+  const chest = $("#chest"), btn = $("#confirmBuy"); btn.disabled = true;
   btn.classList.add("pressed"); setTimeout(() => btn.classList.remove("pressed"), 150);
   chest.classList.add("shake"); vibrate(40);
   setTimeout(() => {
     chest.classList.remove("shake"); chest.classList.add("open"); confetti(60);
-    flyIcons("gem", chest, "#r-gems", 8, () => { onBuy && onBuy(); onBuy = null; });
-    setTimeout(closeOverlays, 900);
+    flyIcons("gem", chest, "#r-gems", 8, () => cb());
+    setTimeout(() => { closeOverlays(); btn.disabled = false; buying = false; }, 900);
   }, 1000);
 });
 
