@@ -62,10 +62,15 @@ h2{margin:6px 0 12px;font-size:26px;line-height:1;font-weight:800;letter-spacing
 /* ---------- home ---------- */
 .hero{position:relative;height:300px;border-radius:var(--r-lg);overflow:hidden;background:linear-gradient(180deg,#2a6fc4 0%,#163f78 60%,#0d2c57 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
 .hero svg{position:absolute;inset:0;width:100%;height:100%}
-.hero .title{position:absolute;left:18px;top:16px}
+.hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:62% 40%;transform:scale(1.04);animation:drift 14s ease-in-out infinite alternate}
+@keyframes drift{to{transform:scale(1.1) translate(-2%,1%)}}
+.hero-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,26,51,.55) 0%,rgba(7,26,51,0) 38%,rgba(7,26,51,0) 62%,rgba(7,26,51,.75) 100%)}
+.hero-beam{position:absolute;left:58%;top:16%;width:60%;height:24%;background:linear-gradient(90deg,rgba(255,230,150,.45),transparent);clip-path:polygon(0 45%,100% 0,100% 100%,0 55%);transform-origin:0 50%;animation:sweep 4s ease-in-out infinite;mix-blend-mode:screen;pointer-events:none}
+@keyframes sweep{50%{opacity:.35;transform:rotate(-6deg)}}
+.hero .title{position:absolute;left:18px;top:16px;z-index:1}
 .hero .title b{display:block;font-size:30px;line-height:.95;font-weight:800;text-shadow:0 3px 0 rgba(0,0,0,.25)}
 .hero .title span{color:#cfe3ff;font-size:14px}
-.hero .play{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);width:220px;animation:breathe 2.4s ease-in-out infinite}
+.hero .play{position:absolute;z-index:1;left:50%;bottom:18px;transform:translateX(-50%);width:220px;animation:breathe 2.4s ease-in-out infinite}
 @keyframes breathe{50%{transform:translateX(-50%) scale(1.04)}}
 .hero .play:active{animation:none}
 .wave{animation:wave 6s ease-in-out infinite}
@@ -237,19 +242,7 @@ canvas#fx{position:absolute;inset:0;width:100%;height:100%;z-index:80;pointer-ev
   <!-- HOME -->
   <section class="screen" id="home">
     <div class="hero">
-      <svg viewBox="0 0 360 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-        <defs><linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1e70c9"/><stop offset="1" stop-color="#0a2a55"/></linearGradient>
-          <radialGradient id="glow"><stop offset="0" stop-color="#fff6c8" stop-opacity=".9"/><stop offset="1" stop-color="#fff6c8" stop-opacity="0"/></radialGradient></defs>
-        <circle cx="178" cy="40" r="16" fill="#fff4cf" opacity=".9"/>
-        <g fill="#ffffff" opacity=".7"><circle cx="300" cy="40" r="1.6"/><circle cx="160" cy="28" r="1.2"/><circle cx="210" cy="70" r="1.4"/><circle cx="120" cy="90" r="1"/></g>
-        <g class="beam"><path d="M236 118 L360 80 L360 156 Z" fill="url(#glow)" opacity=".55"/></g>
-        <path d="M215 210 L225 126 L247 126 L257 210 Z" fill="#f4f8ff"/><path d="M219 180 h34 M222 152 h28" stroke="#ff6f61" stroke-width="10"/>
-        <rect x="221" y="104" width="30" height="22" rx="4" fill="#ffd166"/><path d="M216 104 L236 86 L256 104 Z" fill="#ff6f61"/>
-        <path d="M180 215 Q236 196 300 215 L300 240 L180 240Z" fill="#3a2f55"/>
-        <g class="wave b"><path d="M-40 220 Q0 205 40 220 T120 220 T200 220 T280 220 T360 220 T440 220 V300 H-40Z" fill="#164e93"/></g>
-        <g class="wave"><path d="M-40 236 Q0 222 40 236 T120 236 T200 236 T280 236 T360 236 T440 236 V300 H-40Z" fill="url(#sea)"/></g>
-        <g transform="translate(64 228)"><path d="M0 0 h56 l-8 14 h-40z" fill="#ff6f61"/><path d="M28 0 V-40 L52 -6 Z" fill="#f4f8ff"/></g>
-      </svg>
+      <img class="hero-img" src="art/hero.jpg" alt="" aria-hidden="true"><div class="hero-shade"></div>
       <div class="title"><b>Lumen<br>Tides</b><span>Chapter 3 · Coral Lighthouse</span></div>
       <button class="btn coral play" id="playBtn"><span class="shine"></span>PLAY <span id="playLvl" style="font-size:16px;opacity:.85">Lv 15</span></button>
     </div>
