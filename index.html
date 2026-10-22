@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lumen Tides — UI/UX кейс мобильной игры</title>
+<meta name="description" content="Интерактивный прототип интерфейса мобильной игры: главная, карта уровней, магазин, боевой пропуск, экран победы. Переходы и микро-анимации. Сделано с ИИ.">
+<meta property="og:title" content="Lumen Tides — UI/UX кейс мобильной игры">
+<meta property="og:image" content="https://condrusarsen.github.io/game-ui-case/shots/01-home.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06142a;--card:#0e2547;--line:#1d3a66;--ink:#eef4ff;--mute:#9db3d6;--teal:#2ee6c9;--gold:#ffd166;--coral:#ff6f61}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(90% 50% at 70% 0%,#123d73 0%,var(--bg) 60%);background-color:var(--bg);color:var(--ink);font:16px/1.6 Inter,system-ui,sans-serif}
+a{color:var(--teal)}
+.wrap{max-width:1160px;margin:0 auto;padding:0 16px}
+.hero{display:grid;grid-template-columns:400px 1fr;gap:48px;align-items:center;padding:48px 0 24px}
+@media (max-width:900px){.hero{grid-template-columns:1fr;gap:28px;padding-top:28px}}
+.phone{position:relative;width:min(390px,100%);aspect-ratio:390/844;margin:0 auto;border-radius:48px;padding:12px;background:linear-gradient(160deg,#2a3c5e,#0c1424);box-shadow:0 40px 80px rgba(0,0,0,.55),inset 0 0 0 2px rgba(255,255,255,.08)}
+.phone iframe{width:100%;height:100%;border:0;border-radius:38px;background:#071a33}
+.phone::before{content:"";position:absolute;top:22px;left:50%;width:96px;height:26px;margin-left:-48px;border-radius:20px;background:#000;z-index:2}
+.tag{display:inline-block;font-weight:700;font-size:13px;color:var(--gold);background:rgba(255,209,102,.12);border-radius:999px;padding:4px 12px}
+h1{font:800 clamp(38px,6vw,64px)/1 "Baloo 2",system-ui;margin:14px 0 12px}
+.lead{color:var(--mute);font-size:clamp(17px,2vw,19px);max-width:620px}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0}
+.btn{display:inline-flex;align-items:center;gap:8px;height:52px;padding:0 22px;border-radius:16px;border:0;cursor:pointer;font:800 18px "Baloo 2",system-ui;text-decoration:none;color:#04332c;background:linear-gradient(180deg,#5ef5dd,#2ee6c9 60%,#11a894);box-shadow:0 5px 0 #0a7d6e}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 #0a7d6e}
+.btn.alt{background:rgba(255,255,255,.08);color:var(--ink);box-shadow:none}
+.facts{display:flex;flex-wrap:wrap;gap:10px}
+.facts span{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-size:14px}
+.facts b{color:var(--teal)}
+h2{font:800 32px/1.1 "Baloo 2",system-ui;margin:56px 0 16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px}
+.card h3{margin:0 0 6px;font:800 21px/1.2 "Baloo 2",system-ui}
+.card p{margin:0;color:var(--mute);font-size:15px}
+.shots{display:flex;gap:16px;overflow-x:auto;padding:4px 2px 18px;scroll-snap-type:x mandatory}
+.shots figure{margin:0;flex:0 0 220px;scroll-snap-align:start}
+.shots img{width:220px;border-radius:24px;border:1px solid var(--line);display:block;box-shadow:0 16px 30px rgba(0,0,0,.4)}
+.shots figcaption{font-size:14px;color:var(--mute);margin-top:8px;text-align:center}
+table{width:100%;border-collapse:collapse;background:var(--card);border-radius:20px;overflow:hidden;border:1px solid var(--line);font-size:15px}
+th,td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--mute);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.04em}
+td code{background:rgba(255,255,255,.06);padding:1px 6px;border-radius:6px;font-size:13px}
+.tablewrap{overflow-x:auto}
+.ai{background:linear-gradient(135deg,rgba(46,230,201,.12),rgba(155,123,255,.12));border:1px solid var(--line);border-radius:20px;padding:22px}
+.ai p{margin:6px 0;color:var(--ink)}
+footer{padding:56px 0 48px;color:var(--mute);font-size:15px}
+.cta{background:linear-gradient(135deg,#1b4880,#123461);border-radius:24px;padding:28px;margin-top:56px;border:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <div class="phone"><iframe id="proto" src="app.html" title="Lumen Tides — интерактивный прототип"></iframe></div>
+    <div>
+      <span class="tag">UI/UX · мобильная игра · интерактивный прототип</span>
+      <h1>Lumen Tides</h1>
+      <p class="lead">Полный игровой интерфейс уютной морской головоломки: главная с ивентами, карта уровней, старт уровня с бустерами, экран победы, магазин с офферами и покупкой, боевой пропуск. Всё кликается, анимировано и работает с телефона.</p>
+      <div class="btns">
+        <button class="btn" id="tourBtn">▶ Смотреть авто-тур</button>
+        <a class="btn alt" href="app.html" target="_blank" rel="noopener">Открыть на весь экран</a>
+      </div>
+      <div class="facts">
+        <span><b>7</b> экранов и оверлеев</span><span><b>25+</b> микро-анимаций</span><span><b>1</b> HTML-файл, без фреймворков</span><span>адаптив <b>320–430 px</b></span>
+      </div>
+    </div>
+  </section>
+
+  <h2>Экраны</h2>
+  <div class="shots">
+    <figure><img src="shots/01-home.png" alt="Главная" loading="lazy"><figcaption>Главная: ивенты, квесты</figcaption></figure>
+    <figure><img src="shots/02-map.png" alt="Карта уровней" loading="lazy"><figcaption>Карта уровней</figcaption></figure>
+    <figure><img src="shots/03-level-sheet.png" alt="Старт уровня" loading="lazy"><figcaption>Старт уровня, бустеры</figcaption></figure>
+    <figure><img src="shots/04-victory.png" alt="Победа" loading="lazy"><figcaption>Победа: звёзды, награды</figcaption></figure>
+    <figure><img src="shots/05-shop.png" alt="Магазин" loading="lazy"><figcaption>Магазин: оффер с таймером</figcaption></figure>
+    <figure><img src="shots/06-purchase.png" alt="Покупка" loading="lazy"><figcaption>Покупка: сундук</figcaption></figure>
+    <figure><img src="shots/07-pass.png" alt="Боевой пропуск" loading="lazy"><figcaption>Боевой пропуск</figcaption></figure>
+  </div>
+
+  <h2>UX-решения</h2>
+  <div class="grid">
+    <div class="card"><h3>Одна главная кнопка</h3><p>PLAY — самый крупный и контрастный элемент главной, с «дыханием» и бликом. Уровень подписан прямо на кнопке, чтобы игрок знал, куда идёт.</p></div>
+    <div class="card"><h3>Награда летит в счётчик</h3><p>Монеты и кристаллы физически летят в верхнюю панель, счётчик дотикивает и «подпрыгивает». Игрок видит, откуда пришла ценность.</p></div>
+    <div class="card"><h3>Навигация с направлением</h3><p>Экраны выезжают слева или справа в зависимости от положения вкладки. Активная вкладка поднимается на «капле», которая перетекает между пунктами.</p></div>
+    <div class="card"><h3>Монетизация без давления</h3><p>Оффер с таймером и старой ценой, метки «Popular» и «Best value» на паках, бейдж с числом неполученных наград пропуска — всё, что двигает метрики, но без блокирующих попапов.</p></div>
+    <div class="card"><h3>Карта как прогресс</h3><p>Пройденные уровни со звёздами, текущий пульсирует, следующие закрыты. Аватар игрока переезжает к новому уровню после победы.</p></div>
+    <div class="card"><h3>Доступность</h3><p>Крупные зоны нажатия (от 44 px), контраст текста, учёт <code>prefers-reduced-motion</code> — для людей, которым анимации мешают, движение отключается.</p></div>
+  </div>
+
+  <h2>Моушн-спецификация</h2>
+  <div class="tablewrap"><table>
+    <tr><th>Элемент</th><th>Анимация</th><th>Длительность / кривая</th></tr>
+    <tr><td>Смена экранов</td><td>сдвиг 30% + fade по направлению вкладки</td><td>420 мс · <code>cubic-bezier(.4,0,.2,1)</code></td></tr>
+    <tr><td>Индикатор навигации</td><td>перетекание капли, подъём иконки</td><td>420 мс · overshoot <code>(.2,.9,.25,1.15)</code></td></tr>
+    <tr><td>Bottom sheet уровня</td><td>выезд снизу + затемнение</td><td>450 мс / 300 мс</td></tr>
+    <tr><td>Старт уровня</td><td>«погружение»: круг раскрывается, пузыри</td><td>600 мс + 900 мс</td></tr>
+    <tr><td>Звёзды победы</td><td>по одной: масштаб + поворот, искры, вибрация</td><td>шаг 380 мс</td></tr>
+    <tr><td>Счётчики валют</td><td>tween с ease-out cubic + bump</td><td>800–900 мс</td></tr>
+    <tr><td>Покупка</td><td>сундук трясётся → открывается → кристаллы летят в счётчик</td><td>1000 + 500 + 800 мс</td></tr>
+  </table></div>
+
+  <h2>Как сделано</h2>
+  <div class="ai">
+    <p><b>Сделано с ИИ.</b> Прототип собран ИИ-агентом (Claude Code) в моём рабочем процессе: референсы и задачи → генерация → правки по скриншотам с телефона.</p>
+    <p>Так интерактивный прототип с анимациями получается за вечер, а не за неделю. Заказчик сразу трогает интерфейс на своём телефоне вместо статичных картинок.</p>
+    <p style="color:var(--mute)">Стек: HTML, CSS, vanilla JS; иконки — SVG и emoji; шрифт Baloo 2. Игра, названия и цены вымышлены, покупки ненастоящие.</p>
+  </div>
+
+  <section class="cta">
+    <h2 style="margin-top:0">Нужен такой интерфейс для вашей игры или сервиса?</h2>
+    <p class="lead">Делаю UI/UX и интерактивные прототипы, playable-рекламу и браузерные игры.</p>
+    <div class="btns" style="margin-bottom:0"><a class="btn" href="https://t.me/qintin">Telegram @qintin</a><a class="btn alt" href="https://condrusarsen.github.io/services/">Услуги и цены</a></div>
+  </section>
+
+  <footer>Арсений Атрохов · <a href="https://github.com/CondrusArsen">GitHub</a> · <a href="https://condrusarsen.github.io/playable-ads-demo/">Playable-реклама</a> · <a href="https://condrusarsen.github.io/ai-game-lab/">80+ игр</a></footer>
+</div>
+<script>
+const f = document.getElementById("proto"), b = document.getElementById("tourBtn");
+b.addEventListener("click", () => {
+  f.src = "app.html?tour=1&t=" + Date.now();
+  b.textContent = "⏳ Тур идёт…"; f.scrollIntoView({ behavior: "smooth", block: "center" });
+});
+addEventListener("message", e => { if (e.data && e.data.type === "tour-done") b.textContent = "▶ Смотреть ещё раз"; });
+</script>
+</body>
+</html>
